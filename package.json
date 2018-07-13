@@ -1,0 +1,43 @@
+{
+  "name": "mws-restaurant-stage-1",
+  "version": "1.0.0",
+  "description": "Project Mobile Web Specialist Udacity & Google",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonimg/Restaurant-mws-App.git"
+  },
+  "keywords": [
+    "responsive",
+    "restaurant",
+    "google",
+    "nanodegree",
+    "offline"
+  ],
+  "author": "Tonimg <tonimarchante@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tonimg/Restaurant-mws-App/issues"
+  },
+  "homepage": "https://github.com/tonimg/Restaurant-mws-App#readme",
+  "devDependencies": {
+    "browser-sync": "^2.23.6",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-clean-css": "^3.9.3",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^3.0.1",
+    "gulp-htmlmin": "^4.0.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-responsive": "^2.9.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify-es": "^1.0.4",
+    "gulp-webp": "^3.0.0",
+    "jshint": "^2.9.5"
+  }
+}
