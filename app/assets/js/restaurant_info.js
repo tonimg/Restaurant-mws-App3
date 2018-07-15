@@ -22,7 +22,7 @@ window.initMap = () => {
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
-  });
+  })
 }
 
 /**
@@ -46,9 +46,18 @@ fetchRestaurantFromURL = (callback) => {
         console.error(error);
         return;
       }
+      // fetch the reviews in this point for add to the restaurant
+      DBHelper.fetchRestaurantReviews(self.restaurant, (error, reviews) => {
+        console.log('reviews: ', reviews);
+        console.log('self.restaurant: ', self.restaurant);
+        self.restaurant.reviews = reviews;
+        if (!reviews) {
+          console.error(error);
+        }
+      });
       fillRestaurantHTML();
       callback(null, restaurant)
-    });
+    })
   }
 }
 
@@ -78,7 +87,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
   fillReviewsHTML();
 }
 

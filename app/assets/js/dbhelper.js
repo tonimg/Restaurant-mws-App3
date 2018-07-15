@@ -14,7 +14,7 @@ class DBHelper {
   }
 
   /**
-   * Fetch all restaurants.
+   * Open idb.
    */
   static get dbPromise() {
     return idb.open('restaurants', 1, function (upgradeDb) {
@@ -23,65 +23,89 @@ class DBHelper {
     });
   }
 
-  static fetchRestaurants(callback) {
-    DBHelper.dbPromise
+  /**
+   * Check idb restaurants
+   */
+  static checkIDB() {
+    return DBHelper.dbPromise
       .then(db => {
         if (!db) return;
         const tx = db.transaction('restaurants', 'readwrite');
         const store = tx.objectStore('restaurants');
-        store.getAll()
-          .then(results => {
-            return fetch(DBHelper.DB_URL+`/restaurants`)
-              .then(res => {
-                return res.json();
-              })
-              .then(restaurants => {
-                const tx = db.transaction('restaurants', 'readwrite');
-                const store = tx.objectStore('restaurants');
-                restaurants.forEach(restaurant => {
-                  store.put(restaurant);
-                })
-                callback(null, restaurants);
-              })
-              .catch(error => {
-                // Unable to fetch from network
-                callback(error, null);
-              });
+        return store.getAll()
+          .then(restaurant => {
+            if (restaurant.lenght > 0) {
+              return callback(null, restaurant)
+            }
           })
-
-      });
+      })
   }
 
+  /**
+   * Fetch all restaurants.
+   */
+  static fetchRestaurants(callback) {
+    fetch(`${DBHelper.DB_URL}/restaurants`)
+      .then(res => { return res.json(); })
+      .then(restaurants => {
+        DBHelper.dbPromise
+          .then(db => {
+            if (!db) { return db; }
+            const tx = db.transaction('restaurants', 'readwrite');
+            const store = tx.objectStore('restaurants');
+            restaurants.forEach(restaurant => {
+              store.put(restaurant);
+            })
+          })
+        callback(null, restaurants);
+      })
+      .catch(error => {
+        // Unable to fetch from network
+        callback(error, null);
+      });
+  }
+  /**
+    * Check idb restaurants reviews
+    */
+  static checkIDBReviews() {
+    return DBHelper.dbPromise
+      .then(db => {
+        if (!db) return;
+        const tx = db.transaction('reviews', 'readwrite');
+        const store = tx.objectStore('reviews');
+        return store.getAll()
+          .then(reviews => {
+            if (reviews.lenght > 0) {
+              return callback(null, reviews)
+            }
+          })
+      })
+  }
   /**
    * Fetch reviews for restaruants
    */
   static fetchRestaurantReviews(restaurants, callback) {
-    DBHelper.dbPromise
-      .then(db => {
-        if (!db) return;
-        const tx = db.transaction('reviews');
-        const store = tx.objectStore('reviews');
-        store.getAll()
-          .then(results => {
-            console.log(`${DBHelper.DB_URL}/reviews/?restaurant_id=${restaurant.id}`);
-            return fetch(`${DBHelper.DB_URL}/reviews/?restaurant_id=${restaurant.id}`)
-              .then(res => {
-                return res.json();
-              })
-              .then(reviews => {
-                const tx = db.transaction('reviews', 'readwrite');
-                const store = tx.objectStore('reviews');
-                restaurants.forEach(reviews => {
-                  store.put(reviews);
-                })
-                callback(null, restaurants);
-              })
-              .catch(error => {
-                callback(error, null);
-              });
+    fetch(`${DBHelper.DB_URL}/reviews/?restaurant_id=${restaurants.id}`)
+      .then(res => { return res.json(); })
+      .then(reviews => {
+        DBHelper.dbPromise
+          .then(db => {
+            console.log('db : ', db );
+            DBHelper.checkIDBReviews();
+            const tx = db.transaction('reviews', 'readwrite');
+            const store = tx.objectStore('reviews');
+            reviews.forEach(reviews => {
+              store.put(reviews);              
+              console.log('reviews: ', reviews);
+              return reviews;
+            })
           })
-
-      });
+          console.log('reviews: ', reviews);
+        })
+        .catch(error => {
+          callback(error, null);
+        });
+        callback(null, restaurants);
   }
   /**
    * Submit all Review
@@ -89,7 +113,7 @@ class DBHelper {
   static submitReview(data) {
     return fetch(`${DBHelper.DB_URL}/reviews`, {
       body: JSON.stringify(data),
-      headers:{'content-type': 'aplication/json'},
+      headers: { 'content-type': 'aplication/json' },
       method: 'POST'
     })
       .then(res => {
@@ -112,14 +136,24 @@ class DBHelper {
   /**
    * Set Favorite
    */
-  static setFavorite(id, favorite){
+  static setFavorite(id, favorite) {
     let data = { favorite };
     return fetch(`${DBHelper.DB_URL}/restaurants/${id}`, {
       body: JSON.stringify(data),
       method: 'PUT'
     })
-    .then(res =>  res.json() )
-    .catch(error => console.log(error));
+      .then(res => res.json())
+      .then(data => {
+        DBHelper.dbPromise
+          .then(db => {
+            if (!db) return;
+            const tx = db.transaction('restaurants', 'readwrite');
+            const store = tx.objectStore('restaurants');
+            store.put(data);
+          });
+        return data;
+      })
+      .catch(error => console.log(error));
   }
 
   /**
