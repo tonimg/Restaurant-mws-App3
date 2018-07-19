@@ -43,20 +43,28 @@ fetchRestaurantFromURL = (callback) => {
     DBHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
       if (!restaurant) {
-        console.error(error);
+        console.error('error fetch id ',error);
         return;
       }
+      
       // fetch the reviews in this point for add to the restaurant
-      DBHelper.fetchRestaurantReviews(self.restaurant, (error, reviews) => {
-        console.log('reviews: ', reviews);
-        console.log('self.restaurant: ', self.restaurant);
-        self.restaurant.reviews = reviews;
-        if (!reviews) {
-          console.error(error);
-        }
-      });
-      fillRestaurantHTML();
+
+      // console.log('restaurant.id ', restaurant.id)
+      // DBHelper.fetchRestaurantReviews();
+      // console.log('reviews ', reviews);
+      // DBHelper.fetchRestaurantReviews(id, (error, reviews) => {
+      //   console.log('hola')
+      //   console.log('reviews: ', reviews);
+      //   console.log('self.restaurant: ', self.restaurant);
+      //   self.restaurant.reviews = reviews;
+      //   if (!reviews) {
+      //     console.error(error);
+      //   }
+      // });
+
+
       callback(null, restaurant)
+      fillRestaurantHTML();
     })
   }
 }

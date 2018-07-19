@@ -84,28 +84,22 @@ class DBHelper {
   /**
    * Fetch reviews for restaruants
    */
-  static fetchRestaurantReviews(restaurants, callback) {
+  static fetchRestaurantReviews(callback) {
     fetch(`${DBHelper.DB_URL}/reviews/?restaurant_id=${restaurants.id}`)
       .then(res => { return res.json(); })
       .then(reviews => {
         DBHelper.dbPromise
           .then(db => {
-            console.log('db : ', db );
             DBHelper.checkIDBReviews();
             const tx = db.transaction('reviews', 'readwrite');
             const store = tx.objectStore('reviews');
             reviews.forEach(reviews => {
-              store.put(reviews);              
-              console.log('reviews: ', reviews);
-              return reviews;
+              store.put(reviews);
             })
           })
-          console.log('reviews: ', reviews);
+          callback(null, reviews);
         })
-        .catch(error => {
-          callback(error, null);
-        });
-        callback(null, restaurants);
+        .catch(error => { console.log('error fetch reviews ', error); });
   }
   /**
    * Submit all Review
