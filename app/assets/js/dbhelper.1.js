@@ -8,108 +8,119 @@ class DBHelper {
    * API URL fecth
    * Server addres to make request.
    */
-  static get DATABASE_URL() {
+  static get DB_URL() {
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}`;
   }
 
   /**
-   * Created Store.
+   * Open idb.
    */
-  static get dbPromise() {
-    return idb.open('restaurants', 1, function (upgradeDb) {
-      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-      upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
-    });
-  }
+  // static get dbPromise() {
+  //   return idb.open('restaurants', 1, function (upgradeDb) {
+  //     upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+  //     upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+  //   });
+  // }
+
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
-    DBHelper.dbPromise
-      .then(db => {
-        const tx = db.transaction('restaurants', 'readwrite');
-        const store = tx.objectStore('restaurants');
-        store.getAll()
-          .then(results => {
-            return fetch(`${DBHelper.DATABASE_URL}/restaurants`)
-              .then(response => { return response.json(); })
-              .then(restaurants => {
-                const tx = db.transaction('restaurants', 'readwrite');
-                const store = tx.objectStore('restaurants');
-                restaurants.forEach(restaurant => {
-                  store.put(restaurant);
-                })
-                callback(null, restaurants);
-              })
-              .catch(error => {
-                // Unable to fetch from network
-                callback(error, null);
-              });
-          })
-
+  static fetchRestaurants() {
+    fetch (`${DBHelper.DB_URL}/restaurants`)
+      .then(res => { console.log(res); })
+      // .then(restaurants => console.log(restaurants))
+      .catch(error => { console.log('error fetch restaurants ', error)
       });
   }
-
   /**
-   * Fetch all reviews.
-   */
-  // static fetchReviews(callback) {
-  //   DBHelper.dbPromise
+    * Check idb restaurants reviews
+    */
+  // static checkIDBReviews() {
+  //   return DBHelper.dbPromise
   //     .then(db => {
-  //       const tx = db.transaction('restaurants', 'readwrite');
-  //       const store = tx.objectStore('restaurants');
-  //       store.getAll()
-  //         .then(results => {
-  //           return fetch(`${DBHelper.DATABASE_URL}/reviews`)
-  //             .then(response => { return response.json(); })
-  //             .then(reviews => {
-  //               const tx = db.transaction('reviews', 'readwrite');
-  //               const store = tx.objectStore('reviews');
-  //               restaurants.forEach(reviews => {
-  //                 store.put(reviews);
-  //               })
-  //               callback(null, reviews);
-  //             })
-  //             .catch(error => {
-  //               // Unable to fetch from network
-  //               callback(error, null);
-  //             });
+  //       if (!db) return;
+  //       const tx = db.transaction('reviews', 'readwrite');
+  //       const store = tx.objectStore('reviews');
+  //       return store.getAll()
+  //         .then(reviews => {
+  //           if (reviews.lenght > 0) {
+  //             return callback(null, reviews)
+  //           }
   //         })
-
-  //     });
+  //     })
   // }
   /**
-     * Fetch reviews by id.
-     */
-  static fetchReviewsByRestaurantId(id, callback) {
-    DBHelper.dbPromise
-      .then(db => {
-        const tx = db.transaction('reviews', 'readwrite');
-        const store = tx.objectStore('reviews');
-        store.getAll()
-          .then(results => {
-            console.log('results: ', `${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${id}`);
-            return fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${id}`)
-              .then(response => { return response.json(); })
-              .then(reviews => {
-                const tx = db.transaction('reviews', 'readwrite');
-                const store = tx.objectStore('reviews');
-                restaurants.forEach(reviews => {
-                  store.put(reviews);
-                })
-                callback(null, reviews);
-                console.log('reviews: ', reviews);
-              })
-              .catch(error => {
-                // Unable to fetch from network
-                callback(error, null);
-              });
-          })
+   * Fetch reviews for restaruants
+   */
+  // static fetchRestaurantReviews(callback) {
+  //   fetch(`${DBHelper.DB_URL}/reviews/?restaurant_id=${restaurants.id}`)
+  //     .then(res => { console.log (res.json) return res.json(); })
+  //     .then(reviews => {
+  //       DBHelper.dbPromise
+  //         .then(db => {
+  //           DBHelper.checkIDBReviews();
+  //           const tx = db.transaction('reviews', 'readwrite');
+  //           const store = tx.objectStore('reviews');
+  //           reviews.forEach(reviews => {
+  //             store.put(reviews);
+  //           })
+  //         })
+  //         callback(null, reviews);
+  //       })
+  //       .catch(error => { console.log('error fetch reviews ', error); });
+  // }
+  /**
+   * Submit all Review
+   */
+  // static submitReview(data) {
+  //   return fetch(`${DBHelper.DB_URL}/reviews`, {
+  //     body: JSON.stringify(data),
+  //     headers: { 'content-type': 'aplication/json' },
+  //     method: 'POST'
+  //   })
+  //     .then(res => {
+  //       res.json()
+  //         .then(data => {
+  //           DBHelper.dbPromise
+  //             .then(db => {
+  //               if (!db) return;
+  //               const tx = db.transaction('reviews', 'readwrite');
+  //               const store = tx.objectStore('reviews');
+  //               store.put(data);
+  //             });
+  //           return data;
+  //         });
+  //     })
+  //     .catch(error => {
+  //       callback(error, null);
+  //     });
+  // }
 
-      });
+
+
+  /**
+   * Set Favorite
+   */
+  static setFavorite(id, favorite) {
+    let data = { favorite };
+    return fetch(`${DBHelper.DB_URL}/restaurants/${id}`, {
+      body: JSON.stringify(data),
+      method: 'PUT'
+    })
+      .then(res => res.json())
+      .then(data => {
+        DBHelper.dbPromise
+          .then(db => {
+            if (!db) return;
+            const tx = db.transaction('restaurants', 'readwrite');
+            const store = tx.objectStore('restaurants');
+            store.put(data);
+          });
+        return data;
+      })
+      .catch(error => console.log(error));
   }
-
 
   /**
    * Fetch a restaurant by its ID.
@@ -232,7 +243,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`./assets/img/${restaurant.photograph}.jpg`);
+    return (`./assets/img/${restaurant.photograph}`);
   }
 
   /**
@@ -244,7 +255,6 @@ class DBHelper {
       position: restaurant.latlng,
       title: restaurant.name,
       url: DBHelper.urlForRestaurant(restaurant),
-      // url: `./restaurant.html?id=${restaurant.id}`,
       map: map,
       animation: google.maps.Animation.DROP
     }

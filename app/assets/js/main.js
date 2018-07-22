@@ -140,6 +140,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
+  lazyLoadImages()
   addMarkersToMap();
 }
 
@@ -222,4 +223,34 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+// lazyload function for imgs.
+function lazyLoadImages() {
+	console.log('starting lazy load');
+
+	// arrays are iterable, so forEach can be used, but not Objects
+	var lazyImages = [].slice.call(document.querySelectorAll('myLazyLoad'));
+
+	if ('IntersectionObserver' in window) {
+		console.log('IntersectionObserver activated for lazy images');
+
+		let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
+			entries.forEach(function (entry) {
+				if (entry.isIntersecting) {
+					let lazyImage = entry.target;
+					lazyImage.src = lazyImage.dataset.src;
+
+					lazyImage.classList.remove('myLazyLoad');
+					lazyImageObserver.unobserve(lazyImage);
+				}
+			});
+		});
+
+		lazyImages.forEach(function (lazyImage) {
+			lazyImageObserver.observe(lazyImage);
+		});
+	} else {
+		// Possibly fall back to a more compatible method here
+		console.log('lazy load for images did not succeed');
+	}
 }
