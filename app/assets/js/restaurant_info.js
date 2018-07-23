@@ -40,34 +40,16 @@ fetchRestaurantFromURL = (callback) => {
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
-    DBHelper.fetchReviewsByRestaurantId(id, (error, callback) => {
-      console.log('error: ', error);
-      console.log('restaurant: ', callback);
-      console.log('id: ', id);
-      self.reviews = reviews;
-      if (!reviews) {
-        console.error('error fetch id ',error);
+    DBHelper.fetchReviewsByRestaurantId(id, (error, restaurant) => {
+      console.log('reviews: ', reviews);
+      self.restaurant = restaurant;
+      if (!restaurant) {
+        console.error(error);
         return;
       }
-      
-      // fetch the reviews in this point for add to the restaurant
 
-      // console.log('restaurant.id ', restaurant.id)
-      // DBHelper.fetchRestaurantReviews();
-      // console.log('reviews ', reviews);
-      // DBHelper.fetchRestaurantReviews(id, (error, reviews) => {
-      //   console.log('hola')
-      //   console.log('reviews: ', reviews);
-      //   console.log('self.restaurant: ', self.restaurant);
-      //   self.restaurant.reviews = reviews;
-      //   if (!reviews) {
-      //     console.error(error);
-      //   }
-      // });
-
-
-      callback(null, restaurant)
       fillRestaurantHTML();
+      callback(null, restaurant)
     })
   }
 }

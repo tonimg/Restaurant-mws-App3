@@ -226,14 +226,11 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 }
 // lazyload function for imgs.
 function lazyLoadImages() {
-	console.log('starting lazy load');
 
 	// arrays are iterable, so forEach can be used, but not Objects
 	var lazyImages = [].slice.call(document.querySelectorAll('myLazyLoad'));
 
 	if ('IntersectionObserver' in window) {
-		console.log('IntersectionObserver activated for lazy images');
-
 		let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
 			entries.forEach(function (entry) {
 				if (entry.isIntersecting) {
