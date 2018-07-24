@@ -40,8 +40,7 @@ fetchRestaurantFromURL = (callback) => {
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
-    DBHelper.fetchReviewsByRestaurantId(id, (error, restaurant) => {
-      console.log('reviews: ', reviews);
+    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
       if (!restaurant) {
         console.error(error);
@@ -50,7 +49,17 @@ fetchRestaurantFromURL = (callback) => {
 
       fillRestaurantHTML();
       callback(null, restaurant)
-    })
+    });
+    
+    DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
+      self.reviews = reviews;
+      if (!reviews) {
+        console.error(error);
+        return;
+      }
+      fillReviewsHTML(reviews);
+      callback(null, reviews)
+    });
   }
 }
 
@@ -113,7 +122,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.restaurant.review) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -147,7 +156,9 @@ createReviewHTML = (review) => {
   li.setAttribute("aria-label", `Review from ${review.name}`);
   li.appendChild(name);
 
+  DBHelper.setFormattedDateForReview(review)
   const date = document.createElement('p');
+  console.log('date: ', date);
   date.innerHTML = review.date;
   date.setAttribute("class", "date");
   date.setAttribute("tabindex", 0);

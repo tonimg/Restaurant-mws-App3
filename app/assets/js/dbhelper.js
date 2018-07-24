@@ -16,7 +16,7 @@ class DBHelper {
   /**
    * Created Store.
    */
-  static get openDatabase() {
+  static get dbPromise() {
     return idb.open('restaurants', 1, function (upgradeDb) {
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
       upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
@@ -26,13 +26,16 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    DBHelper.openDatabase
+    //get from IDB
+    DBHelper.dbPromise
       .then(db => {
+        if (!db) return;
         const tx = db.transaction('restaurants', 'readwrite');
         const store = tx.objectStore('restaurants');
         store.getAll()
           .then(results => {
             return fetch(`${DBHelper.DATABASE_URL}/restaurants`)
+              //get from API
               .then(response => { return response.json(); })
               .then(restaurants => {
                 const tx = db.transaction('restaurants', 'readwrite');
@@ -52,21 +55,46 @@ class DBHelper {
   }
 
   /**
+ * Fetch a restaurant by its ID.
+ */
+  static fetchRestaurantById(id, callback) {
+    // fetch all restaurants with proper error handling.
+    DBHelper.fetchRestaurants((error, restaurants) => {
+      console.log('restaurants: ', restaurants);
+      if (error) {
+        callback(error, null);
+      } else {
+        const restaurant = restaurants.find(r => r.id == id);
+        if (restaurant) { // Got the restaurant
+          callback(null, restaurant);
+          console.log('restaurant: ', restaurant);
+        } else { // Restaurant does not exist in the database
+          callback('Restaurant does not exist', null);
+        }
+      }
+    });
+  }
+
+
+  /**
    * Fetch all reviews.
    */
   static fetchReviews(callback) {
-    DBHelper.openDatabase
+    // get from IDB
+    DBHelper.dbPromise
       .then(db => {
+        if (!db) return;
         const tx = db.transaction('reviews', 'readwrite');
         const store = tx.objectStore('reviews');
         store.getAll()
           .then(results => {
             return fetch(`${DBHelper.DATABASE_URL}/reviews`)
+              //Get from API
               .then(response => { return response.json(); })
               .then(reviews => {
                 const tx = db.transaction('reviews', 'readwrite');
                 const store = tx.objectStore('reviews');
-                restaurants.forEach(reviews => {
+                reviews.forEach(reviews => {
                   store.put(reviews);
                 })
                 callback(null, reviews);
@@ -79,77 +107,39 @@ class DBHelper {
 
       });
   }
-  
-static fetchReviewsByRestaurantId(id, callback) {
-  console.log('id: ', id);
-  // fetch all restaurants with proper error handling.
-  DBHelper.fetchReviews((error, reviews) => {
-    if (error) {
-      callback(error, null);
-    } else {
-      const review = reviews.find(r => r.id == id);
-      if (review) { // Got the restaurant
-        callback(null, review);
-      } else { // Restaurant does not exist in the database
-        callback('Restaurant does not exist', null);
-      }
-    }
-  });
-}
   /**
      * Fetch reviews by id.
      */
-  // static fetchReviewsByRestaurantId(id, callback) {
-  //   DBHelper.openDatabase
-  //     .then(db => {
-  //       const tx = db.transaction('reviews', 'readwrite');
-  //       const store = tx.objectStore('reviews');
-  //       store.getAll()
-  //         .then(results => {
-  //           console.log('results: ', `${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${id}`);
-  //           return fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${id}`)
-  //             .then(response => { return response.json(); })
-  //             .then(reviews => {
-  //               const tx = db.transaction('reviews', 'readwrite');
-  //               const store = tx.objectStore('reviews');
-  //               console.log('reviews: ', reviews);
-  //               restaurants.forEach(reviews => {
-  //                 self.reviews = reviews;
-  //                 store.put(reviews);
-  //               })
-  //               callback(null, reviews);
-  //               console.log('reviews: ', reviews);
-  //             })
-  //             .catch(error => {
-  //               // Unable to fetch from network
-  //               callback(error, null);
-  //             });
-  //         })
 
-  //     });
-  // }
-
-
-  /**
-   * Fetch a restaurant by its ID.
-   */
-  static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
+  static fetchReviewsByRestaurantId(id, callback) {
+    // fetch all reviews with proper error handling.
+    DBHelper.fetchReviews((error, reviews) => {
       if (error) {
         callback(error, null);
       } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
+        //const review = reviews.find(r => r.restaurant_id == id);
+        const byRestaurantId = id => review => review.restaurant_id == id;
+        const review = reviews.filter(byRestaurantId(id));
+
+        if (review) { // Got the review
+          callback(null, review);
+        } else { // Review does not exist in the database
+          callback('Review does not exist', null);
         }
       }
     });
   }
+/**
+ * 
+ */
+static setFormattedDateForReview (review) {
+  const reviewDate = new Date(review.createdAt);
+  const date = ('0' + reviewDate.getDate()).slice(-2);
+  const month = ('0' + (reviewDate.getMonth() + 1)).slice(-2);
+  const year = reviewDate.getFullYear();
 
-  
+  review.date = `${date}/${month}/${year}`;
+}
   /**
    * Set Favorite
    */
@@ -161,7 +151,7 @@ static fetchReviewsByRestaurantId(id, callback) {
     })
       .then(res => res.json())
       .then(data => {
-        DBHelper.openDatabase
+        DBHelper.dbPromise
           .then(db => {
             if (!db) return;
             const tx = db.transaction('restaurants', 'readwrite');
