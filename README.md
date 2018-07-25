@@ -14,7 +14,7 @@ Now, in this stage we are using the fetch data from server api, in this stage I 
 For run the project is mandatory follow the next instructions.
 
 ## Instructions run server API
-For run this app, you will download the server api from [here](https://github.com/udacity/mws-restaurant-stage-2).
+For run this app, you will download the server api from [here](https://github.com/udacity/mws-restaurant-stage-3).
 way to the path to run the commands to below:
 
 ###### Install project dependancies

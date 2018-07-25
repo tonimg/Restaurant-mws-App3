@@ -7,6 +7,11 @@ const myLazyLoad = new LazyLoad({
 /**
  * Initialize map as soon as the page is loaded.
  */
+let showMap = document.querySelector('#show-map');
+showMap.addEventListener('click', ()=>{
+  document.getElementById('map-container').style.height = "400px";
+  showMap.style.display="none";
+})
 
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
@@ -50,7 +55,7 @@ fetchRestaurantFromURL = (callback) => {
       fillRestaurantHTML();
       callback(null, restaurant)
     });
-    
+
     DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
       self.reviews = reviews;
       if (!reviews) {
@@ -158,7 +163,6 @@ createReviewHTML = (review) => {
 
   DBHelper.setFormattedDateForReview(review)
   const date = document.createElement('p');
-  console.log('date: ', date);
   date.innerHTML = review.date;
   date.setAttribute("class", "date");
   date.setAttribute("tabindex", 0);

@@ -75,7 +75,7 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 /**
  * Initialize  map, called from HTML.
  */
-let showMap = document.querySelector('#showMap');
+let showMap = document.querySelector('#show-map');
 showMap.addEventListener('click', ()=>{
   document.getElementById('map').style.height = "400px";
   showMap.style.display="none";
