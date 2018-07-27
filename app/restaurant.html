@@ -58,29 +58,32 @@
       <!-- end restaurant -->
       <!-- Beginning reviews -->
       <section id="reviews-container">
-        <ul id="reviews-list" tabindex="0"></ul>
+        <!-- New review -->
+          <div id="new-review">
+              <fieldset>
+                <legend tabindex="0">Add Your Review</legend>
+                <form action="POST" id="review-form">
+                  <input type="text" placeholder="Your Name" aria-label="Review Author Name" name="name" required  aria-required="true">
+                    <label for="rating">Rating</label>
+                    <select name="rating" aria-label="Rating Restaurant from 1 to 5"  aria-required="true">
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3" selected>3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  <textarea name="comment"  aria-label="Write your review comment" cols="30" rows="5" placeholder="Write your review here" required></textarea>
+                  <input id="submit" type="submit" value="Submit Review" aria-label="Send Review">
+                </form>
+      
+              </fieldset>
+            </div>
+            <!-- End new review -->
+        <ul id="reviews-list" aria-label="List of restaurants reviews" tabindex="0"></ul>
       </section>
       <!-- End reviews -->
       <!-- Beginning form reviews -->
-      <section id="new-review">
-        <fieldset>
-          <legend tabindex="0">Add Your Review</legend>
-          <form action="POST" id="review-form">
-            <input type="text" placeholder="Your Name" aria-label="Review Author Name" id="name" required>
-              <label for="rating">Rating</label>
-              <select name="rating" id="rating" aria-label="Rating Restaurant from 1 to 5">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3" selected>3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            <textarea name="comment" id="comment" aria-label="Write your review comment" cols="60" rows="6" placeholder="Write your review here" required></textarea>
-            <input id="submit" type="submit" value="Submit Review" aria-label="Send Review">
-          </form>
 
-        </fieldset>
-      </section>
 
       <!-- End form reviews -->
     </div>
