@@ -15,6 +15,7 @@ const rename = require('gulp-rename');
 const jshint = require('gulp-jshint');
 const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
+var gzip = require('gulp-gzip');
 
 // File where the favicon markups are stored
 const reload = browserSync.reload;
@@ -56,11 +57,13 @@ gulp.task('serve:dist', () => {
 gulp.task('minify-js', () => {
   gulp.src('./app/assets/js/*.js')
     .pipe(uglify())
+    .pipe(gzip({ append: true }))
     .pipe(gulp.dest('./dist/assets/js/'));
 });
 gulp.task('minify-SWjs', () => {
   gulp.src('./*.js')
     .pipe(uglify())
+    .pipe(gzip({ append: true }))
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -82,6 +85,7 @@ gulp.task('minify-css', () => {
     )
     .pipe(gulp.dest('./app/assets/css/'))
     .pipe(csso())
+    .pipe(gzip({ append: true }))
     .pipe(gulp.dest('./dist/assets/css/'));
 });
 
