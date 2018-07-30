@@ -197,6 +197,86 @@ fillBreadcrumb = (restaurant = self.restaurant) => {
 }
 
 /**
+ * Add review from user data
+ */
+addReviewUser = () => {
+  const review = {
+    restaurant_id: self.restaurant.id,
+    name: document.querySelector('input[name="name"]').value,
+    rating: document.querySelector('select[name="rating"]').value,
+    comments: document.querySelector('textarea[name="comment"]').value,
+    createdAt: (new Date()).getTime()
+  };
+
+  if (navigator.onLine) {
+    // user is online, call request to save review
+    this.sendReviewData(review);
+  } else {
+    // user is offline, store data localy
+    this.storeReviewData(review);
+  }
+}
+
+/**
+ * Add reviews to Restaurats Reviews
+ */
+addReviewToList = (review) => {
+  //check if is fill the review
+  if((review.name.length === 0 )|| (review.comments.length === 0 ) ){
+    alert('Please fill the review!')
+    return
+  }
+  const container = document.getElementById('reviews-container');
+  const ul = document.getElementById('reviews-list');
+  // check if some reviews are added yet, if not, then remove
+  if (ul.getElementsByTagName('li').length) {
+    ul.appendChild(createReviewHTML(review));
+  } else {
+    container.removeChild(container.lastChild);
+    ul.appendChild(createReviewHTML(review));
+    container.appendChild(ul);
+  }
+}
+
+/**
+ * Send Review storage.
+ */
+sendReviewData = (review) => {
+  console.log('review: ', review);
+  DBHelper.addReviewIDB(review)
+    .then((reviewObject) => {
+      if (reviewObject) {
+        this.addReviewToList(reviewObject);
+      }
+      this.clearReviewForm();
+    })
+    .catch((error) => {
+      console.error('Review creation service down: ' + error);
+    });
+}
+
+/**
+ * Store Review data in IndexedDB.
+ */
+storeReviewData = (review) => {
+  DBHelper.saveReviewOffline(review);
+  this.addReviewToList(review);
+  this.clearReviewForm(review);
+  console.log('Review added to IndexedDB!');
+}
+
+/**
+ * Clear Add Review's form.
+ */
+clearReviewForm = () => {
+  document.querySelector('input[name="name"]').value = '';
+  document.querySelector('select[name="rating"]').value = 0;
+  document.querySelector('textarea[name="comment"]').value = '';
+}
+
+
+
+/**
  * Get a parameter by name from page URL.
  */
 getParameterByName = (name, url) => {

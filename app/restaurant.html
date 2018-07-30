@@ -60,9 +60,9 @@
       <section id="reviews-container">
         <!-- New review -->
           <div id="new-review">
+            <legend tabindex="0">Add Your Review</legend>
               <fieldset>
-                <legend tabindex="0">Add Your Review</legend>
-                <form action="POST" id="review-form">
+                <form id="review-form">
                   <input type="text" placeholder="Your Name" aria-label="Review Author Name" name="name" required  aria-required="true">
                     <label for="rating">Rating</label>
                     <select name="rating" aria-label="Rating Restaurant from 1 to 5"  aria-required="true">
@@ -73,7 +73,7 @@
                       <option value="5">5</option>
                     </select>
                   <textarea name="comment"  aria-label="Write your review comment" cols="30" rows="5" placeholder="Write your review here" required></textarea>
-                  <input id="submit" type="submit" value="Submit Review" aria-label="Send Review">
+                  <input type="button" onclick="addReviewUser()" aria-label="Send Review" value="Submit Review">
                 </form>
       
               </fieldset>

@@ -107,17 +107,16 @@ class DBHelper {
 
       });
   }
-  /**
-     * Fetch reviews by id.
-     */
 
-  static fetchReviewsByRestaurantId(id, callback) {
+/**
+* Fetch reviews by id.
+*/
+ static fetchReviewsByRestaurantId(id, callback) {
     // fetch all reviews with proper error handling.
     DBHelper.fetchReviews((error, reviews) => {
       if (error) {
         callback(error, null);
       } else {
-        //const review = reviews.find(r => r.restaurant_id == id);
         const byRestaurantId = id => review => review.restaurant_id == id;
         const review = reviews.filter(byRestaurantId(id));
 
@@ -129,8 +128,51 @@ class DBHelper {
       }
     });
   }
+
+  /**
+   * Save Offline the review
+   */
+  static saveReviewOffline(review) {
+    // TODO: better solution there should be to use localForage library which is async
+    const key = 'offline-reviews';
+    // check if exists any items
+    const offlineReviews = localStorage.getItem(key);
+    if (offlineReviews) {
+      try {
+        const reviewsJSON = JSON.parse(offlineReviews);
+        reviewsJSON.push(review);
+        const reviewsString = JSON.stringify(reviewsJSON);
+        localStorage.setItem(key, reviewsString);
+      } catch (error) {
+        console.error('Error while parsing JSON: ', error);
+      }
+    } else {
+      const reviewsJSON = [review];
+      const reviewsString = JSON.stringify(reviewsJSON);
+      localStorage.setItem(key, reviewsString);
+    }
+  }
+
+  /**
+   * Add review
+   */
+  static addReviewIDB(review) {
+    return fetch(DBHelper.DATABASE_URL + '/reviews', {
+      method: 'POST',
+      body: JSON.stringify(review)
+    }).then(response => {
+      if (response.ok) {
+        return response.json().then(data => {
+          // update IdexedDB with latest service data
+          return data;
+        });
+      }
+      return Promise.reject(new Error(`Request failed. Returned status of ${response.status}`));
+    });
+  }
+
 /**
- * 
+ * Format Date
  */
 static setFormattedDateForReview (review) {
   const reviewDate = new Date(review.createdAt);
@@ -140,6 +182,7 @@ static setFormattedDateForReview (review) {
 
   review.date = `${date}/${month}/${year}`;
 }
+
   /**
    * Set Favorite
    */
