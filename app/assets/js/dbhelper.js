@@ -88,8 +88,11 @@ class DBHelper {
         const store = tx.objectStore('reviews');
         store.getAll()
           .then(results => {
+            console.log('results: ', results);
             return fetch(`${DBHelper.DATABASE_URL}/reviews`)
               //Get from API
+              // FIXME: check order fetch reviews avoid no reviews when is yes
+
               .then(response => { return response.json(); })
               .then(reviews => {
                 const tx = db.transaction('reviews', 'readwrite');
@@ -133,7 +136,7 @@ class DBHelper {
    * Save Offline the review
    */
   static saveReviewOffline(review) {
-    // TODO: better solution there should be to use localForage library which is async
+    console.log('review: ', review);
     const key = 'offline-reviews';
     // check if exists any items
     const offlineReviews = localStorage.getItem(key);
@@ -162,7 +165,9 @@ class DBHelper {
       body: JSON.stringify(review)
     }).then(response => {
       if (response.ok) {
-        return response.json().then(data => {
+        return response.json()
+        .then(data => {
+          console.log('data: ', data);
           // update IdexedDB with latest service data
           return data;
         });

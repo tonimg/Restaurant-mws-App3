@@ -197,6 +197,23 @@ fillBreadcrumb = (restaurant = self.restaurant) => {
 }
 
 /**
+ * Show form for add review
+ */
+showReview = () =>{
+  let formReview = document.querySelector('legend');
+  let toogle = false;
+  formReview.addEventListener('click', ()=>{
+    if (toogle === false){
+      document.querySelector('fieldset').style.display = 'block';
+      toogle = true;
+    }else{
+      document.querySelector('fieldset').style.display = 'none';
+      toogle = false;
+    }
+  })
+}
+showReview()
+/**
  * Add review from user data
  */
 addReviewUser = () => {
@@ -215,8 +232,9 @@ addReviewUser = () => {
     // user is offline, store data localy
     this.storeReviewData(review);
   }
+  //hidde the form
+  document.querySelector('fieldset').style.display = 'none';
 }
-
 /**
  * Add reviews to Restaurats Reviews
  */
@@ -242,7 +260,6 @@ addReviewToList = (review) => {
  * Send Review storage.
  */
 sendReviewData = (review) => {
-  console.log('review: ', review);
   DBHelper.addReviewIDB(review)
     .then((reviewObject) => {
       if (reviewObject) {

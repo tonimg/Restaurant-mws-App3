@@ -565,36 +565,42 @@ fieldset {
   box-shadow: 0px 0px 4px 2px #5c0a0a;
   border-radius: 10px;
   color: #333;
+  display: none;
 }
 
-legend {
+#new-review legend {
   color: #333;
   border-radius: 10px;
   box-shadow: 0px 0px 4px 2px #5c0a0a;
   padding: 6px;
-  margin-bottom: 30px;
-  width: 100%;
-  margin: 10px 0;
-  padding: 0;
-  font-family: 'Lato', Arial, Helvetica, sans-serif;
-  font-size: 10pt;
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+#new-review legend:hover{
+  // background: #5c0a0a;
+  opacity: 0.8;
+  background-image: linear-gradient(to bottom, #e2aeae, #c45959);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 #review-form {
   width: 100%;
-  display: flex;
+  // display: flex;
 }
 
 input[name="name"],
-select[name="rating"] {
-  display: inline-flex;
-  margin-bottom: 10px;
+select[name="rating"]
+textarea[name="comment"] {
+  margin: 30px;
 }
 
-#new-review legend {
-  font-size: 2em;
+input[type="button"]{
+  background: #1a9b10;
+  border-radius: 12px;
+  color: #fff;
+  padding: 10px;
 }
-
 /* ====================== Media Queries ====================== */
 
 @media screen and (max-width: 490px) {
