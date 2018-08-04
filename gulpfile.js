@@ -58,8 +58,8 @@ gulp.task('minify-js', () => {
     .pipe(uglify())
     .pipe(gulp.dest('./dist/assets/js/'));
 });
-gulp.task('minify-SWjs', () => {
-  gulp.src('./*.js')
+gulp.task('minify-SW', () => {
+  gulp.src('./app/sw.js')
     .pipe(uglify())
     .pipe(gulp.dest('./dist/'));
 });
@@ -141,4 +141,4 @@ gulp.task('images', () => {
     .pipe(gulp.dest('./dist/assets/img'));
 });
 
-gulp.task('minify-files',   ['minify-js', 'minify-SWjs',  'minify-css', 'minify-html','images']);
+gulp.task('minify-files',   ['minify-js', 'minify-SW',  'minify-css', 'minify-html','images']);
