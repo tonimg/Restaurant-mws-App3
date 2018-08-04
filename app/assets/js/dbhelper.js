@@ -20,6 +20,7 @@ class DBHelper {
     return idb.open('restaurants', 1, function (upgradeDb) {
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
       upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+      upgradeDb.createObjectStore('offline-reviews', { keyPath: 'updatedAt' });
     });
   }
   /**
@@ -60,7 +61,6 @@ class DBHelper {
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
     DBHelper.fetchRestaurants((error, restaurants) => {
-      console.log('restaurants: ', restaurants);
       if (error) {
         callback(error, null);
       } else {
@@ -87,13 +87,16 @@ class DBHelper {
         const tx = db.transaction('reviews', 'readwrite');
         const store = tx.objectStore('reviews');
         store.getAll()
-          .then(results => {
-            console.log('results: ', results);
-            return fetch(`${DBHelper.DATABASE_URL}/reviews`)
-              //Get from API
-              // FIXME: check order fetch reviews avoid no reviews when is yes
-
+          .then( (data) => {
+            if (data && data.length > 0){
+              callback(null, data);
+            }else{
+              return fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${restaurant.id}`)
               .then(response => { return response.json(); })
+
+              //Get from API
+              // FIXME: check order fetch reviews avoid no reviews when is 
+
               .then(reviews => {
                 const tx = db.transaction('reviews', 'readwrite');
                 const store = tx.objectStore('reviews');
@@ -106,6 +109,7 @@ class DBHelper {
                 // Unable to fetch from network
                 callback(error, null);
               });
+            }
           })
 
       });
@@ -136,25 +140,28 @@ class DBHelper {
    * Save Offline the review
    */
   static saveReviewOffline(review) {
-    console.log('review: ', review);
-    const key = 'offline-reviews';
-    // check if exists any items
-    const offlineReviews = localStorage.getItem(key);
-    if (offlineReviews) {
-      try {
-        const reviewsJSON = JSON.parse(offlineReviews);
-        reviewsJSON.push(review);
-        const reviewsString = JSON.stringify(reviewsJSON);
-        localStorage.setItem(key, reviewsString);
-      } catch (error) {
-        console.error('Error while parsing JSON: ', error);
-      }
-    } else {
-      const reviewsJSON = [review];
-      const reviewsString = JSON.stringify(reviewsJSON);
-      localStorage.setItem(key, reviewsString);
-    }
+    DBHelper.dbPromise
+    .then( db => {
+      if (!db) return;
+      const tx = db.transaction('offline-reviews');
+      const store = tx.objectStore('offline-reviews');
+      store.getAll()
+      .then (offlineReviews =>{
+        offlineReviews.forEach(review => {
+          DBHelper.addReviewIDB(review)
+        })
+        DBHelper.clearOfflineReviews();
+      })
+    })
   }
+
+  static clearOfflineReviews() {
+		DBHelper.dbPromise.then(db => {
+			const tx = db.transaction('offline-reviews', 'readwrite');
+			const store = tx.objectStore('offline-reviews').clear();
+		})
+		return;
+	}
 
   /**
    * Add review
@@ -162,7 +169,11 @@ class DBHelper {
   static addReviewIDB(review) {
     return fetch(DBHelper.DATABASE_URL + '/reviews', {
       method: 'POST',
-      body: JSON.stringify(review)
+      body: JSON.stringify(review),
+      headers:{
+        'Accept': 'aplication/json',
+        'Content-Type': 'aplication/json'
+      }
     }).then(response => {
       if (response.ok) {
         return response.json()
@@ -179,7 +190,7 @@ class DBHelper {
 /**
  * Format Date
  */
-static setFormattedDateForReview (review) {
+static setFormattedDate (review) {
   const reviewDate = new Date(review.createdAt);
   const date = ('0' + reviewDate.getDate()).slice(-2);
   const month = ('0' + (reviewDate.getMonth() + 1)).slice(-2);

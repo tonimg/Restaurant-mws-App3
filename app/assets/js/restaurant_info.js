@@ -128,6 +128,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.restaurant.review) => {
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -161,7 +162,7 @@ createReviewHTML = (review) => {
   li.setAttribute("aria-label", `Review from ${review.name}`);
   li.appendChild(name);
 
-  DBHelper.setFormattedDateForReview(review)
+  DBHelper.setFormattedDate(review)
   const date = document.createElement('p');
   date.innerHTML = review.date;
   date.setAttribute("class", "date");
@@ -287,11 +288,9 @@ storeReviewData = (review) => {
  */
 clearReviewForm = () => {
   document.querySelector('input[name="name"]').value = '';
-  document.querySelector('select[name="rating"]').value = 0;
+  document.querySelector('select[name="rating"]').value = 3;
   document.querySelector('textarea[name="comment"]').value = '';
 }
-
-
 
 /**
  * Get a parameter by name from page URL.
