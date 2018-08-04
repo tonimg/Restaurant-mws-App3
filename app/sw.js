@@ -1,15 +1,27 @@
 const cacheName = "restaurant-cache-v1";
 const cacheFiles = [
 	'./',
+	'./index.html',
 	'./restaurant.html',
+	'/restaurant.html?id=1',
+	'/restaurant.html?id=2',
+	'/restaurant.html?id=3',
+	'/restaurant.html?id=4',
+	'/restaurant.html?id=5',
+	'/restaurant.html?id=6',
+	'/restaurant.html?id=7',
+	'/restaurant.html?id=8',
+	'/restaurant.html?id=9',
+	'/restaurant.html?id=10',
 	'./manifest.json',
+	'./sw.js',
 	'./assets/js/dbhelper.js',
 	'./assets/js/idb.js',
 	'./assets/js/index.js',
 	'./assets/js/main.js',
 	'./assets/js/restaurant_info.js',
-	'./assets/js/sw.js',
 	'./assets/data/restaurants.json',
+	'./assets/css/normalize.css',
 	'./assets/css/styles.css',
 	'./assets/img/1.jpg',
 	'./assets/img/2.jpg',
@@ -26,7 +38,7 @@ const cacheFiles = [
 	'./assets/icons/icon_128x128.png',
 	'./assets/icons/icon_256x256.png',
 	'./assets/icons/icon_512x512.png',
-	'https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css',
+	'https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.9.0/lazyload.min.js',
 	'https://fonts.googleapis.com/css?family=Lato:400i|Lobster'
 ];
 

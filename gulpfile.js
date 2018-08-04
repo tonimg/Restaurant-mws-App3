@@ -115,13 +115,7 @@ gulp.task('images', () => {
       }, {
         width: 600,
         rename: { suffix: '-l' }
-      }, {
-        // Compress, strip metadata, and rename original image
-        rename: { suffix: '-xl' }
       }],
-      // '*.png': {
-      //   width: '100%'
-      // },
       '*': {
         width: '100%'
       }
@@ -130,7 +124,7 @@ gulp.task('images', () => {
       // Global configuration for all images
       errorOnEnlargement: false,
       // The output quality for JPEG, WebP and TIFF output formats
-      quality: 60,
+      quality: 50,
       compressionLevel: 9,
       // Use progressive (interlace) scan for JPEG and PNG output
       progressive: true,
