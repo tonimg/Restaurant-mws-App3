@@ -91,7 +91,7 @@ class DBHelper {
             if (data && data.length > 0){
               callback(null, data);
             }else{
-              return fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${restaurant.id}`)
+              return fetch(`${DBHelper.DATABASE_URL}/reviews/`)
               .then(response => { return response.json(); })
 
               //Get from API

@@ -1,18 +1,7 @@
 const cacheName = "restaurant-cache-v1";
 const cacheFiles = [
 	'./',
-	'./index.html',
 	'./restaurant.html',
-	'/restaurant.html?id=1',
-	'/restaurant.html?id=2',
-	'/restaurant.html?id=3',
-	'/restaurant.html?id=4',
-	'/restaurant.html?id=5',
-	'/restaurant.html?id=6',
-	'/restaurant.html?id=7',
-	'/restaurant.html?id=8',
-	'/restaurant.html?id=9',
-	'/restaurant.html?id=10',
 	'./manifest.json',
 	'./sw.js',
 	'./assets/js/dbhelper.js',
