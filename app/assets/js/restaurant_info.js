@@ -20,7 +20,7 @@ window.initMap = () => {
       console.error(error);
     } else {
       self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
+        zoom: 14,
         center: restaurant.latlng,
         scrollwheel: false
       });
@@ -57,13 +57,13 @@ fetchRestaurantFromURL = (callback) => {
     });
 
     DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
-      self.reviews = reviews;
+      self.restaurant.reviews = reviews;
+      console.log('reviews: ', reviews);
       if (!reviews) {
         console.error(error);
         return;
       }
       fillReviewsHTML(reviews);
-      callback(null, reviews)
     });
   }
 }
@@ -94,7 +94,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  fillReviewsHTML();
 }
 
 /**
@@ -191,6 +190,8 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant = self.restaurant) => {
+  if(!restaurant){return;}
+  console.log('restaurant: ', restaurant);
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -241,7 +242,7 @@ addReviewUser = () => {
  */
 addReviewToList = (review) => {
   //check if is fill the review
-  if((review.name.length === 0 )|| (review.comments.length === 0 ) ){
+  if((review.name.length === 0 ) || (review.comments.length === 0 ) ){
     alert('Please fill the review!')
     return
   }
