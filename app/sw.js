@@ -1,6 +1,6 @@
 const cacheName = "restaurant-cache-v2";
 const cacheFiles = [
-	'/',
+	'./',
 	'./restaurant.html',
 	'./manifest.json',
 	'./assets/js/dbhelper.js',

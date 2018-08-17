@@ -241,31 +241,6 @@ class DBHelper {
       })
   }
 
-
-  //             callback(null, reviews);
-  //           }else{
-  //             //Get from API
-  //             fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${id}`)
-  //             .then(res => { return res.json(); })
-  //             .then(reviews => {
-  //               console.log('reviews: ', reviews);
-  //               const tx = db.transaction('reviews', 'readwrite');
-  //               const store = tx.objectStore('reviews');
-  //               reviews.forEach(reviews => {
-  //                 store.put(reviews);
-  //               })
-  //               callback(null, reviews);
-  //             })
-  //             .catch(error => {
-  //               // Unable to fetch from network
-  //               callback(error, null);
-  //             });
-  //           }
-  //         })
-
-  //     });
-  // }
-
   /**
   * Fetch reviews by id.
   */
@@ -315,7 +290,7 @@ class DBHelper {
    * Save Offline the review
    */
   static saveReviewOffline(review) {
-    return DBHelper.idbPromise()
+    DBHelper.idbPromise
       .then(db => {
         if (!db) return;
         const tx = db.transaction('offline-reviews', 'readwrite');

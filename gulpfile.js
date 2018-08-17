@@ -11,8 +11,6 @@ const responsive = require('gulp-responsive');
 const uglify = require('gulp-uglify-es').default;
 const csso = require('gulp-csso');
 const htmlmin = require('gulp-htmlmin');
-const rename = require('gulp-rename');
-const jshint = require('gulp-jshint');
 const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
 
@@ -30,7 +28,7 @@ gulp.task('serve', () => {
   });
   gulp.watch('./app/*.html').on('change', reload);
   gulp.watch('./app/assets/js/**/*.js').on('change', reload);
-  gulp.watch('./app/**/*.js').on('change', reload);
+  gulp.watch('./app/sw.js').on('change', reload);
   gulp.watch('./app/assets/scss/**/*.scss', ['minify-css']).on('change', reload);
 });
 
