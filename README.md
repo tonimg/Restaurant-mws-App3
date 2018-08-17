@@ -49,10 +49,6 @@ curl "http://localhost:1337/restaurants/{3}"
 
 ##### Star the project APP
 
-###### for minify-files and create the responsive images
-```
-# gulp minify-files 
-```
 ###### for run the project
 ```
 # gulp serve:dist 
@@ -76,4 +72,6 @@ curl "http://localhost:1337/restaurants/{3}"
 ![homepage](./img/details.png)
 
 
-> In this stage, I decide use the leflet instead gmaps. I just decide this change for obtein better performance in audits tools as lighthouse in chrome developers.
+### Note about ES6
+
+Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write.
