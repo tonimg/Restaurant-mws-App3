@@ -49,13 +49,14 @@ curl "http://localhost:1337/restaurants/{3}"
 
 ##### Star the project APP
 
-###### for run the project
-```
-# gulp serve:dist 
-```
 ###### for run the project on Dev
 ```
 # gulp serve 
+```
+
+###### for run the project on
+```
+# gulp serve:dist 
 ```
 
 ## Automaticaly open your default browser on localhost:8000, where you can view and navigate for the restaurant App.
