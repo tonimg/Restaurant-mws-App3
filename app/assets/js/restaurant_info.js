@@ -58,7 +58,6 @@ fetchRestaurantFromURL = (callback) => {
 
     DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
       self.restaurant.reviews = reviews;
-      console.log('reviews: ', reviews);
       if (!reviews) {
         console.error(error);
         return;
@@ -241,27 +240,28 @@ addReviewUser = () => {
  * Add reviews to Restaurats Reviews
  */
 addReviewToList = (review) => {
-  //check if is fill the review
-  if((review.name.length === 0 ) || (review.comments.length === 0 ) ){
-    alert('Please fill the review!')
-    return
-  }
-  const container = document.getElementById('reviews-container');
-  const ul = document.getElementById('reviews-list');
-  // check if some reviews are added yet, if not, then remove
-  if (ul.getElementsByTagName('li').length) {
-    ul.appendChild(createReviewHTML(review));
-  } else {
-    container.removeChild(container.lastChild);
-    ul.appendChild(createReviewHTML(review));
-    container.appendChild(ul);
-  }
+    const container = document.getElementById('reviews-container');
+    const ul = document.getElementById('reviews-list');
+    // check if some reviews are added yet, if not, then remove
+    if (ul.getElementsByTagName('li').length) {
+      ul.appendChild(createReviewHTML(review));
+    } else {
+      container.removeChild(container.lastChild);
+      ul.appendChild(createReviewHTML(review));
+      container.appendChild(ul);
+    }
+  
 }
 
 /**
  * Send Review storage.
  */
 sendReviewData = (review) => {
+    //check if is fill the review before to send
+  if((review.name.length === 0 ) || (review.comments.length === 0 ) ){
+    alert('Please fill the review!');
+    return;
+  }
   DBHelper.addReviewIDB(review)
     .then((reviewObject) => {
       if (reviewObject) {
