@@ -190,12 +190,11 @@ class DBHelper {
                 if (review.restaurant_id == id) storeReviews.push(review);
               })
               /*get offline-reviews IDB if there's an offline submission*/
-              const trans = db.transaction('offline-reviews');
-              const store = trans.objectStore('offline-reviews');
-              store.getAll()
+              const transOffline = db.transaction('offline-reviews');
+              const storeOffline = transOffline.objectStore('offline-reviews');
+              storeOffline.getAll()
                 .then(offlineReviews => {
                   if (offlineReviews.length > 0) {
-                    console.log('looping offline-reviews in IDB', offlineReviews);
                     offlineReviews.forEach(offlineReview => {
                       if (offlineReview.restaurant_id == id) storeReviews.push(offlineReview);
                     })
@@ -226,7 +225,7 @@ class DBHelper {
                   const trans = db.transaction('reviews', 'readwrite');
                   const store = trans.objectStore('reviews');
                   reviews.forEach(review => store.put(review));
-                  console.log('storing reviews in IDB', reviews);
+                  console.log('storing in IDB');
                   callback(null, reviews);
                 })
                 .catch(err => {
@@ -235,7 +234,7 @@ class DBHelper {
             }
           })
           .catch(err => {
-            console.log('nothing in IDB');
+            console.log('nothing in IDB' , err);
             return;
           })
       })
