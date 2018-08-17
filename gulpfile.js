@@ -30,6 +30,7 @@ gulp.task('serve', () => {
   });
   gulp.watch('./app/*.html').on('change', reload);
   gulp.watch('./app/assets/js/**/*.js').on('change', reload);
+  gulp.watch('./app/**/*.js').on('change', reload);
   gulp.watch('./app/assets/scss/**/*.scss', ['minify-css']).on('change', reload);
 });
 
