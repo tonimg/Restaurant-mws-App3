@@ -142,7 +142,7 @@ fillReviewsHTML = (reviews = self.restaurant.review) => {
   }
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
+    ul.insertBefore(createReviewHTML(review),ul.childNodes[0]);
   });
   container.appendChild(ul);
 }
@@ -242,12 +242,15 @@ addReviewUser = () => {
 addReviewToList = (review) => {
     const container = document.getElementById('reviews-container');
     const ul = document.getElementById('reviews-list');
+    
     // check if some reviews are added yet, if not, then remove
     if (ul.getElementsByTagName('li').length) {
-      ul.appendChild(createReviewHTML(review));
+      // ul.appendChild(createReviewHTML(review));
+      ul.insertBefore(createReviewHTML(review),ul.childNodes[0]);
     } else {
       container.removeChild(container.lastChild);
-      ul.appendChild(createReviewHTML(review));
+      // ul.appendChild(createReviewHTML(review));
+      ul.insertBefore(createReviewHTML(review),ul.childNodes[0]);
       container.appendChild(ul);
     }
   
@@ -270,7 +273,7 @@ sendReviewData = (review) => {
       this.clearReviewForm();
     })
     .catch((error) => {
-      console.error('Review creation service down: ' + error);
+      console.error('Review creation error: ',  error);
     });
 }
 

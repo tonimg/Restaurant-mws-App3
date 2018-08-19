@@ -2,6 +2,16 @@ const cacheName = "restaurant-cache-v2";
 const cacheFiles = [
 	'./',
 	'./restaurant.html',
+	'./restaurant.html?id=1',
+	'./restaurant.html?id=2',
+	'./restaurant.html?id=3',
+	'./restaurant.html?id=4',
+	'./restaurant.html?id=5',
+	'./restaurant.html?id=6',
+	'./restaurant.html?id=7',
+	'./restaurant.html?id=8',
+	'./restaurant.html?id=9',
+	'./restaurant.html?id=10',
 	'./manifest.json',
 	'./assets/js/dbhelper.js',
 	'./assets/js/idb.js',
@@ -13,70 +23,60 @@ const cacheFiles = [
 	'./assets/css/styles.css',
 	'./assets/img/1.jpg',
 	'./assets/img/1-l.jpg',
-	'./assets/img/1-xl.jpg',
 	'./assets/img/1-m.jpg',
 	'./assets/img/1-m@2x.jpg',
 	'./assets/img/1-s.jpg',
 	'./assets/img/1-s@2x.jpg',
 	'./assets/img/2.jpg',
 	'./assets/img/2-l.jpg',
-	'./assets/img/2-xl.jpg',
 	'./assets/img/2-m.jpg',
 	'./assets/img/2-m@2x.jpg',
 	'./assets/img/2-s.jpg',
 	'./assets/img/2-s@2x.jpg',
 	'./assets/img/3.jpg',
 	'./assets/img/3-l.jpg',
-	'./assets/img/3-xl.jpg',
 	'./assets/img/3-m.jpg',
 	'./assets/img/3-m@2x.jpg',
 	'./assets/img/3-s.jpg',
 	'./assets/img/3-s@2x.jpg',
 	'./assets/img/4.jpg',
 	'./assets/img/4-l.jpg',
-	'./assets/img/4-xl.jpg',
 	'./assets/img/4-m.jpg',
 	'./assets/img/4-m@2x.jpg',
 	'./assets/img/4-s.jpg',
 	'./assets/img/4-s@2x.jpg',
 	'./assets/img/5.jpg',
 	'./assets/img/5-l.jpg',
-	'./assets/img/5-xl.jpg',
 	'./assets/img/5-m.jpg',
 	'./assets/img/5-m@2x.jpg',
 	'./assets/img/5-s.jpg',
 	'./assets/img/5-s@2x.jpg',
 	'./assets/img/6.jpg',
 	'./assets/img/6-l.jpg',
-	'./assets/img/6-xl.jpg',
 	'./assets/img/6-m.jpg',
 	'./assets/img/6-m@2x.jpg',
 	'./assets/img/6-s.jpg',
 	'./assets/img/6-s@2x.jpg',
 	'./assets/img/7.jpg',
 	'./assets/img/7-l.jpg',
-	'./assets/img/7-xl.jpg',
 	'./assets/img/7-m.jpg',
 	'./assets/img/7-m@2x.jpg',
 	'./assets/img/7-s.jpg',
 	'./assets/img/7-s@2x.jpg',
 	'./assets/img/8.jpg',
 	'./assets/img/8-l.jpg',
-	'./assets/img/8-xl.jpg',
 	'./assets/img/8-m.jpg',
 	'./assets/img/8-m@2x.jpg',
 	'./assets/img/8-s.jpg',
 	'./assets/img/8-s@2x.jpg',
 	'./assets/img/9.jpg',
 	'./assets/img/9-l.jpg',
-	'./assets/img/9-xl.jpg',
 	'./assets/img/9-m.jpg',
 	'./assets/img/9-m@2x.jpg',
 	'./assets/img/9-s.jpg',
 	'./assets/img/9-s@2x.jpg',
 	'./assets/img/10.jpg',
 	'./assets/img/10-l.jpg',
-	'./assets/img/10-xl.jpg',
 	'./assets/img/10-m.jpg',
 	'./assets/img/10-m@2x.jpg',
 	'./assets/img/10-s.jpg',
@@ -127,53 +127,3 @@ self.addEventListener('fetch', function(event){
 		})
 	);
 });
-
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(cacheName)
-        .then(cache => {cache.addAll(cacheFiles);})
-    )
-});
-
-self.addEventListener('fetch', event => {
-    const url = new URL(event.request.url);
-
-    if (url.pathname === '/index.html') {
-        event.respondWith(
-            caches.match('index.html')
-            .then(response => response || fetch(event.request))
-        );
-        return;
-    };
-
-    if (url.pathname.startsWith('/restaurant.html')) {
-        event.respondWith(
-            caches.match('restaurant.html')
-            .then(response => response || fetch(event.request))
-        );
-        return;
-    };
-
-    if (url.pathname.endsWith('.jpg')) {
-        event.respondWith(servePhoto(event.request));
-        return;
-    };
-
-    event.respondWith(
-        caches.match(event.request)
-        .then(response => response || fetch(event.request))
-    );
-});
-
-function servePhoto(request) {
-    return caches.open(photosCacheName).then(cache => {
-        return cache.match(request).then(response => (
-            response || cacheAndFetch(cache, request)
-        ));
-    });
-}
-
-function cacheAndFetch(cache, request) {
-    cache.add(request);
-    return fetch(request);
-}

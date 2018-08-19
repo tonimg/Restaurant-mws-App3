@@ -17,16 +17,19 @@ class DBHelper {
    * Created Store.
    */
   static get idbPromise() {
-    return idb.open('restaurants', 1, function (upgradeDb) {
-      switch (upgradeDb.oldVersion) {
-        case 0:
-          upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-        case 1:
-          upgradeDb.createObjectStore('reviews', { keyPath: 'id' }).createIndex('restaurant_id', 'restaurant_id');
-          upgradeDb.createObjectStore('offline-reviews', { keyPath: 'updatedAt' });
-      }
-    });
-
+    if (!navigator.serviceWorker){
+      return Promise.resolve();
+    }else{
+      return idb.open('restaurants', 1, function (upgradeDb) {
+        switch (upgradeDb.oldVersion) {
+          case 0:
+            upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+          case 1:
+            upgradeDb.createObjectStore('reviews', { keyPath: 'id'}).createIndex('restaurant_id', 'restaurant_id');
+            upgradeDb.createObjectStore('offline-reviews', { keyPath: 'updatedAt', autoIncrement: true });
+        }
+      });
+    }
   }
   /**
    * Fetch all restaurants.
@@ -179,7 +182,7 @@ class DBHelper {
       .then(db => {
         if (!db) return;
         // get reviews from IDB
-        const tx = db.transaction('reviews', 'readwrite');
+        const tx = db.transaction('reviews');
         const store = tx.objectStore('reviews');
         store.getAll()
           .then((reviews) => {
@@ -195,11 +198,13 @@ class DBHelper {
               storeOffline.getAll()
                 .then(offlineReviews => {
                   if (offlineReviews.length > 0) {
+                    //there offline review
                     offlineReviews.forEach(offlineReview => {
                       if (offlineReview.restaurant_id == id) storeReviews.push(offlineReview);
                     })
                   }
                   if (storeReviews.length > 0) {
+                    //check reviews on IDB and show
                     callback(null, storeReviews);
                   } else {
                     //fetch from server
@@ -272,17 +277,23 @@ class DBHelper {
         'Content-Type': 'aplication/json'
       }
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json()
-            .then(review => {
-              console.log('review: ', review);
-              // update IdexedDB with latest  review
-              return review;
-            });
-        }
-        return Promise.reject(new Error(`Request failed. Returned status of ${response.status}`));
+    .then(res => res.json())
+    .then(review => {        
+      DBHelper.idbPromise
+      .then(db => {
+        const trans = db.transaction('reviews', 'readwrite');
+        const store = trans.objectStore('reviews');
+        console.log('store.put review: ', review);
+        store.put(review);
       });
+      console.log('review stored in Server and IDB', review);
+       return review;
+    })
+    .catch(err => {
+      /*when offline*/
+      console.log('Oops! you\'re offline!', err);
+      DBHelper.saveReviewOffline(review)
+    })
   }
 
   /**
@@ -291,14 +302,17 @@ class DBHelper {
   static saveReviewOffline(review) {
     DBHelper.idbPromise
       .then(db => {
-        if (!db) return;
         const tx = db.transaction('offline-reviews', 'readwrite');
         const store = tx.objectStore('offline-reviews');
         store.put(review);
+        
+      console.log('review stored offline', review);
+      // return review;
         return tx.complete;
       }).then(() => {
         console.log('Review saved offline')
       });
+      DBHelper.clearOfflineReviews();
   }
 
   static clearOfflineReviews() {
@@ -306,7 +320,7 @@ class DBHelper {
       .then(db => {
         const tx = db.transaction('offline-reviews', 'readwrite');
         const store = tx.objectStore('offline-reviews');
-        store.clear();
+        store.getAll();
       })
     return;
   }
