@@ -20,20 +20,21 @@
   <!-- Beginning header -->
   <header>
       <div id="status"></div>
-    <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+    <nav role="navigation">
+      <h1><a tabindex="0" href="/">Restaurant Reviews</a></h1>
     </nav>
   </header>
   <!-- End header -->
 
   <!-- Beginning main -->
-  <main id="maincontent" aria-label="content" role="main">
+  <main id="maincontent">
     <section id="map-container">
       <div id="map" role="application" aria-hidden="true" tabindex="-1"></div>
     </section>
     <section role="search" tabindex="-1">
       <div class="filter-options">
-          <button id="show-map" aria-label="Open Map">Show Map</button>
+        <label for="show" id="show-map" aria-label="Open Map" tabindex="0">Show Map</label>
+        <input type="checkbox" id="show">
         <h2>Filter Results</h2>
           <select id="neighborhoods-select" aria-label="Select a neighbourhood" name="neighborhoods" onchange="updateRestaurants()">
             <option value="all">All Neighborhoods</option>

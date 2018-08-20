@@ -187,8 +187,11 @@ createRestaurantHTML = (restaurant) => {
   const favourite = document.createElement('span');
   if(restaurant.favourite) favourite.classList.add('active');
   favourite.innerHTML = '☆';
+  favourite.setAttribute("tabindex",0);
+  favourite.classList.add("focus");
   favourite.setAttribute('data-id', restaurant.id);
   favourite.setAttribute('role', 'button');
+  favourite.setAttribute('arial-label', 'set as favourite');
   favourite.title = (restaurant.favourite) ? 'Remove from Favourites' : 'Add to Favourites';
   favourite.addEventListener('click', updateFavourite);
   li.append(favourite);

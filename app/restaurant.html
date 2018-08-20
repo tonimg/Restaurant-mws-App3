@@ -20,15 +20,15 @@
   <!-- Beginning header -->
   <header>
     <!-- Beginning nav -->
-    <nav>
+    <nav role="navigation">
       <h1>
-        <a href="/">Restaurant Reviews</a>
+        <a  tabindex="0" href="/">Restaurant Reviews</a>
       </h1>
     </nav>
     <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb">
+    <ul aria-label="Breadcrumbs" id="breadcrumb">
       <li>
-        <a href="/">Home</a>
+        <a tabindex="0" href="/">Home</a>
       </li>
     </ul>
     <!-- End breadcrumb -->
@@ -37,13 +37,14 @@
   <!-- End header -->
 
   <!-- Beginning main -->
-  <main id="maincontent" role="main">
+  <main id="maincontent">
     <!-- Beginning map -->
-    <section id="map-container">
-      <div id="map" role="application" aria-hidden="true" tabindex="-1">
+    <section id="map-container" aria-label="Google map results" aria-hidden="true">
+      <div id="map" role="application" aria-hidden="true">
 
       </div>
-      <button id="show-map" aria-label="Open Map">Show Map</button>
+      <label for="show" id="show-map" aria-label="Open Map" tabindex="0">Show Map</label>
+      <input type="checkbox" id="show">
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->

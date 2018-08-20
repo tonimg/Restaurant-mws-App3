@@ -162,6 +162,11 @@ nav h1 a {
 }
 
 /* ====================== Map ====================== */
+input[type=checkbox] {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
 
 #show-map {
   margin: 10px;
@@ -209,7 +214,7 @@ nav h1 a {
   font-size: 2em;
   font-weight: 300;
   line-height: 1;
-  margin: 0 20px;
+  margin: 20px 0 20px;
   letter-spacing: 6px;
 }
 
@@ -368,6 +373,7 @@ nav h1 a {
   background-color: #ccc;
   height: 100%;
   width: 100%;
+  margin-bottom: 9px;
 }
 
 .inside #maincontent {
@@ -380,10 +386,11 @@ nav h1 a {
   flex-wrap: wrap;
   justify-content: space-around;
   margin: 0 auto;
+  width: 100%;
 }
 
 #restaurant-name {
-  color: #f18200;
+  color: #5d2855;
   font-family: Arial, sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -423,7 +430,7 @@ nav h1 a {
   padding: 40px;
   max-width: 800px;
   width: 100%;
-  margin: 40px 10px;
+  margin: 15px 10px;
   text-align: center;
 }
 
@@ -432,12 +439,13 @@ nav h1 a {
 }
 
 #reviews-container h2 {
-  color: #f58500;
+  color: #af8553;
   font-size: 24pt;
   margin: 20px;
   font-weight: 300;
   letter-spacing: -1px;
   padding-bottom: 1pt;
+  filter: contrast(86%);
 }
 
 #reviews-list {
@@ -604,20 +612,6 @@ input[type="button"]{
   padding: 10px;
 }
 
-// status onLine offLine
-
-#status {
-  position: fixed;
-  width: 100%;
-  font: bold 1em sans-serif;
-  color: #FFF;
-  padding: 0.3em;
-}
-
-
-.offline {
-  background: red;
-}
 /* ====================== Media Queries ====================== */
 
 @media screen and (max-width: 490px) {
