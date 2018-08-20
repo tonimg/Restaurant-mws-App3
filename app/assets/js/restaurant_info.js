@@ -232,6 +232,7 @@ addReviewUser = () => {
   } else {
     // user is offline, store data localy
     this.storeReviewData(review);
+    
   }
   //hidde the form
   document.querySelector('fieldset').style.display = 'none';

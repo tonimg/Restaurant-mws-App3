@@ -183,33 +183,34 @@ createRestaurantHTML = (restaurant) => {
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 
-// Add favorite element
-  const favorite = document.createElement('span');
-  if(restaurant.favorite) favorite.classList.add('active');
-  favorite.innerHTML = '☆';
-  favorite.setAttribute('data-id', restaurant.id);
-  favorite.setAttribute('role', 'button');
-  favorite.title = (restaurant.favorite) ? 'Remove from Favorites' : 'Add to Favorites';
-  favorite.addEventListener('click', updateFavorite);
-  li.append(favorite);
+// Add favourite element
+  const favourite = document.createElement('span');
+  if(restaurant.favourite) favourite.classList.add('active');
+  favourite.innerHTML = '☆';
+  favourite.setAttribute('data-id', restaurant.id);
+  favourite.setAttribute('role', 'button');
+  favourite.title = (restaurant.favourite) ? 'Remove from Favourites' : 'Add to Favourites';
+  favourite.addEventListener('click', updateFavourite);
+  li.append(favourite);
 
   return li
 }
 
 /**
- * Toggle favorite
+ * Toggle favourite
  */
-const updateFavorite = (event) => {
+const updateFavourite = (event) => {
   const id = Number(event.target.getAttribute('data-id'));
-  const favorite = !event.target.classList.contains('active');
+  const favourite = !event.target.classList.contains('active');
 
-  DBHelper.setFavorite(id, favorite)
+  DBHelper.setFavourite(id, favourite)
   .then(response => {
     event.target.classList.toggle('active');
-    event.target.title = (response.favorite) ? 'Remove from Favorites' : 'Add to Favorites';    
+    event.target.title = (response.favourite) ? 'Remove from Favourites' : 'Add to Favourites';    
   })
   .catch(error => {
-    console.log(error);
+    console.log('send offline Storage');
+    // DBHelper.saveFavouriteOffline(id, favourite);
   });
 }
 /**

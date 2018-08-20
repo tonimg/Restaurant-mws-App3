@@ -17,16 +17,18 @@ class DBHelper {
    * Created Store.
    */
   static get idbPromise() {
-    if (!navigator.serviceWorker){
+    if (!navigator.serviceWorker) {
       return Promise.resolve();
-    }else{
+    } else {
       return idb.open('restaurants', 1, function (upgradeDb) {
         switch (upgradeDb.oldVersion) {
           case 0:
             upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
           case 1:
-            upgradeDb.createObjectStore('reviews', { keyPath: 'id'}).createIndex('restaurant_id', 'restaurant_id');
+            upgradeDb.createObjectStore('reviews', { keyPath: 'id' }).createIndex('restaurant_id', 'restaurant_id');
             upgradeDb.createObjectStore('offline-reviews', { keyPath: 'updatedAt', autoIncrement: true });
+          case 3:
+            upgradeDb.createObjectStore('offline-favourites', { keyPath: 'restaurant_id' }).createIndex('by-restaurant', 'restaurant_id');
         }
       });
     }
@@ -239,7 +241,7 @@ class DBHelper {
             }
           })
           .catch(err => {
-            console.log('nothing in IDB' , err);
+            console.log('nothing in IDB', err);
             return;
           })
       })
@@ -277,23 +279,23 @@ class DBHelper {
         'Content-Type': 'aplication/json'
       }
     })
-    .then(res => res.json())
-    .then(review => {        
-      DBHelper.idbPromise
-      .then(db => {
-        const trans = db.transaction('reviews', 'readwrite');
-        const store = trans.objectStore('reviews');
-        console.log('store.put review: ', review);
-        store.put(review);
-      });
-      console.log('review stored in Server and IDB', review);
-       return review;
-    })
-    .catch(err => {
-      /*when offline*/
-      console.log('Oops! you\'re offline!', err);
-      DBHelper.saveReviewOffline(review)
-    })
+      .then(res => res.json())
+      .then(review => {
+        DBHelper.idbPromise
+          .then(db => {
+            const trans = db.transaction('reviews', 'readwrite');
+            const store = trans.objectStore('reviews');
+            console.log('store.put review: ', review);
+            store.put(review);
+          });
+        console.log('review stored in Server and IDB ', review);
+        return review;
+      })
+      .catch(err => {
+        /*when offline*/
+        console.log('Oops! you\'re offline!', err);
+        DBHelper.saveReviewOffline(review)
+      })
   }
 
   /**
@@ -305,24 +307,32 @@ class DBHelper {
         const tx = db.transaction('offline-reviews', 'readwrite');
         const store = tx.objectStore('offline-reviews');
         store.put(review);
-        
-      console.log('review stored offline', review);
-      // return review;
+
+        console.log('review stored offline', review);
+        // return review;
         return tx.complete;
       }).then(() => {
         console.log('Review saved offline')
+        DBHelper.clearOfflineReviews();
       });
-      DBHelper.clearOfflineReviews();
   }
 
-  static clearOfflineReviews() {
+  static clearOfflineReviews(review) {
     DBHelper.idbPromise
       .then(db => {
+        if (!db) return;
+        const requests = [];
         const tx = db.transaction('offline-reviews', 'readwrite');
         const store = tx.objectStore('offline-reviews');
-        store.getAll();
+        store.iterateCursor(cursor => {
+          if (!cursor) return;
+          DBHelper.addReviewIDB(cursor.value)
+          requests.push(cursor.value);
+          cursor.delete();
+          cursor.continue();
+          return tx.complete;
+        })
       })
-    return;
   }
 
   /**
@@ -338,10 +348,10 @@ class DBHelper {
   }
 
   /**
-   * Set Favorite
+   * Set Favourite
    */
-  static setFavorite(id, favorite) {
-    let data = { favorite };
+  static setFavourite(id, favourite) {
+    let data = { favourite };
     return fetch(`${DBHelper.DATABASE_URL}/restaurants/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data)
@@ -355,11 +365,53 @@ class DBHelper {
             const store = tx.objectStore('restaurants');
             store.put(data);
           });
+        console.log('favourite stored in Server and IDB ', data)
         return data;
-      })
-      .catch(error => console.log(error));
+      }).catch(error => {
+        console.log('Save favourite offline mode')
+        DBHelper.saveFavouriteOffline(id, favourite);
+      }).catch(error => console.log('error ', error));
   }
 
+  /**
+  * Set Favourite Offline mode
+  */
+  static saveFavouriteOffline(id, favourite) {
+    const data = []
+    data['restaurant_id'] = parseInt(id);
+    data['is_favourite'] = favourite;
+
+    DBHelper.idbPromise
+      .then(db => {
+        if (!db) return;
+        const tx = db.transaction('offline-favourites', 'readwrite');
+        const store = tx.objectStore('offline-favourites');
+        store.put(data);
+        return tx.complete;
+      }).then(() => {
+        DBHelper.removeOfflineFavourite();
+      });
+  }
+
+  /**
+   * Favourite Offline remove and send to server
+   */
+  static removeOfflineFavourite() {
+    DBHelper.idbPromise
+      .then(db => {
+        if (!db) return;
+        const requests = [];
+        const tx = db.transaction('offline-favourites', 'readwrite');
+        const store = tx.objectStore('offline-favourites');
+        store.iterateCursor(cursor => {
+          if (!cursor) return;
+          DBHelper.setFavourite(cursor.value.restaurant_id, cursor.value.is_favourite)
+          requests.push(cursor.value);
+          cursor.delete();
+          cursor.continue();
+        })
+      })
+  }
 
   /**
    * Restaurant page URL.

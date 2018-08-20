@@ -603,6 +603,21 @@ input[type="button"]{
   color: #fff;
   padding: 10px;
 }
+
+// status onLine offLine
+
+#status {
+  position: fixed;
+  width: 100%;
+  font: bold 1em sans-serif;
+  color: #FFF;
+  padding: 0.3em;
+}
+
+
+.offline {
+  background: red;
+}
 /* ====================== Media Queries ====================== */
 
 @media screen and (max-width: 490px) {
