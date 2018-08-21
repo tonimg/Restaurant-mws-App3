@@ -61,18 +61,6 @@ curl "http://localhost:1337/restaurants/{3}"
 
 ## Automaticaly open your default browser on localhost:8000, where you can view and navigate for the restaurant App.
 
-
-### Lighthouse Results
-
-*  HomePage
-
-![homepage](./img/home.png)
-
-*  Details page
-
-![homepage](./img/details.png)
-
-
 ### Note about ES6
 
 Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write.
